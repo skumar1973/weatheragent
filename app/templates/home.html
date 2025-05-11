@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome Page</title>
+    <style>
+        body {
+            background-color: lightblue;
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            font-size: 3rem; /* Adjust font size for screen title */
+            margin-top: 20px;
+        }
+        #response {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 2px solid #007BFF;
+            border-radius: 10px;
+            display: inline-block;
+            text-align: left;
+            max-width: 600px;
+            word-wrap: break-word;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        #response p {
+            margin: 10px 0;
+            font-size: 1.2rem;
+            line-height: 1.5;
+        }
+        #response strong {
+            color: #007BFF;
+            font-weight: bold;
+        }
+        #response ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+        #response li {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            list-style-type: disc;
+        }
+        #response .section-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-top: 10px;
+            color: #0056b3;
+        }
+        #response .content {
+            margin-left: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to My GenAI Assistant</h1>
+    <form id="askForm">
+        <label for="ask">Ask:</label>
+        <input type="text" id="ask" name="ask" required>
+        <br>
+        <button type="submit">Send</button>
+    </form>
+    <div id="response"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('askForm').addEventListener('submit', async function(event) {
+                event.preventDefault(); // Prevent form submission from reloading the page
+                const askValue = document.getElementById('ask').value;
+
+                try {
+                    const response = await fetch('/submit', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ ask: askValue })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        document.getElementById('response').innerHTML = `
+                            <div>
+                                <p class="section-title">You asked:</p>
+                                <p class="content">${data.ask}</p>
+                                <p class="section-title">Response:</p>
+                                <p class="content">${data.response}</p>
+                            </div>
+                        `;
+                    } else {
+                        document.getElementById('response').innerHTML = '<p>Error: Unable to fetch response.</p>';
+                    }
+                } catch (error) {
+                    document.getElementById('response').innerHTML = `<p>Error: ${error.message}</p>`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
