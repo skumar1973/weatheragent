@@ -1,9 +1,17 @@
 # filepath: d:\site_usingcpilot\flask-welcome-app\app\routes.py
+import os
+from dotenv import load_dotenv
+
 import json
 import requests
 from flask import current_app as app
 from flask import render_template, request, jsonify
 from openai import OpenAI
+
+load_dotenv()
+
+openai_api_key = os.getenv("OPENAI_API_KEY")
+print("openai_api_key", openai_api_key)
 
 
 @app.route('/')
@@ -33,6 +41,8 @@ avaiable_tools = {
 def submit():
     data = request.get_json()  # Get JSON data from the request
     ask_value = data.get('ask')  # Extract the 'ask' value
+    # Define the system prompt
+    
     system_prompt = """You are a helpful assistant.
     when user asked a question break the question into steps 
     You work on start, plan, action, observe mode.
@@ -66,10 +76,10 @@ def submit():
     Output: {{ "step": "output", "content": "The weather for new york seems to be 12 degrees." }}
     
     """  
-    # Define the system prompt
+   
     # Call OpenAI API
     client= OpenAI(
-        api_key="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")
+        api_key=openai_api_key) 
     
     messages=[
                 {"role": "system", "content": system_prompt},
